@@ -1,6 +1,6 @@
 <div align="center">
 
-# One neuron versus a population: decoding stimulus direction from simulated cosine-tuned neurons with Poisson noise
+# One Neuron Versus a Population: Decoding Stimulus Direction from Simulated Cosine-Tuned Neurons With Poisson Noise
 
 **Tiago Souto Rocha**
 
