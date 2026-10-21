@@ -36,21 +36,29 @@ We describe the population response with heatmaps and PCA, then decode the stimu
 
 ### 2.1 Simulated population
 
-Each neuron $i$ ($i = 1, \dots, 50$) has a preferred direction $\varphi_i$, a baseline rate $b_i$ and a gain $g_i$. Its mean firing rate for a stimulus moving in direction $\theta$ is
+Each neuron $i$ ($i = 1,\ldots,50$) has a preferred direction $\varphi_i$, a baseline rate $b_i$ and a gain $g_i$. Its mean firing rate for a stimulus moving in direction $\theta$ is:
 
 $$
-f_i(\theta) = b_i + g_i \, \frac{1 + \cos(\theta - \varphi_i)}{2},
-\tag{1}
+f_i(\theta)
+=
+b_i
++
+g_i\frac{1+\cos(\theta-\varphi_i)}{2}.
 $$
 
-so the rate varies between $b_i$ and $b_i + g_i$. On each trial, the spike count of every neuron in a window of $T$ seconds is drawn independently:
+Therefore,
 
 $$
-n_i \sim \mathrm{Poisson}\big(f_i(\theta)\, T\big).
-\tag{2}
+b_i \leq f_i(\theta) \leq b_i+g_i.
 $$
 
-Noise is therefore private to each neuron (no noise correlations), and the variance of each count equals its mean (Fano factor 1). Parameters are listed in Table 1. As a sanity check, the empirical means were compared with $f_i(\theta)\,T$ and the Fano factor was computed for every neuron and stimulus.
+On each trial, the spike count of every neuron in a window of $T$ seconds is drawn independently:
+
+$$
+n_i \sim \operatorname{Poisson}\!\left(f_i(\theta)\,T\right).
+$$
+
+Noise is therefore private to each neuron (no noise correlations), and the variance of each count equals its mean (Fano factor 1). Parameters are listed in Table 1. As a sanity check, the empirical means were compared with $f_i(\theta)T$ and the Fano factor was computed for every neuron and stimulus.
 
 **Table 1.** Simulation and analysis parameters.
 
@@ -70,11 +78,16 @@ Noise is therefore private to each neuron (no noise correlations), and the varia
 
 Trial-averaged responses were normalised to each neuron's maximum mean count and displayed with neurons sorted by preferred direction. Single trials were z-scored per neuron.
 
-Expanding Eq. 1 shows that every tuning curve is a weighted sum of the same three functions of $\theta$:
+Expanding the tuning equation above gives:
 
 $$
-f_i(\theta) = \Big(b_i + \tfrac{g_i}{2}\Big) + \tfrac{g_i}{2}\cos\varphi_i\,\cos\theta + \tfrac{g_i}{2}\sin\varphi_i\,\sin\theta .
-\tag{3}
+f_i(\theta)
+=
+\left(b_i+\frac{g_i}{2}\right)
++
+\frac{g_i}{2}\cos\varphi_i\,\cos\theta
++
+\frac{g_i}{2}\sin\varphi_i\,\sin\theta.
 $$
 
 After the mean is removed, the noise-free population response therefore lies in a two-dimensional plane and traces a closed curve (a ring) as $\theta$ goes around the circle. We tested this prediction with PCA on the noise-free responses at 360 directions, and compared it with PCA on the z-scored single trials. PCA was used for visualisation only and played no part in decoding (Cunningham & Yu, 2014).
@@ -83,22 +96,26 @@ After the mean is removed, the noise-free population response therefore lies in 
 
 The stimulus was decoded from the vector of single-trial spike counts with L2-regularised multinomial logistic regression (scikit-learn defaults, C = 1). Counts were standardised inside a pipeline, so the scaling was fitted on the training folds only. Performance was estimated with stratified 5-fold cross-validation, so each test fold held 12 trials per stimulus.
 
-Significance was assessed with a label-permutation test (Ojala & Garriga, 2010). The stimulus labels were shuffled 200 times, the whole pipeline was refitted and cross-validated each time, and the p-value was computed as
+Significance was assessed with a label-permutation test (Ojala & Garriga, 2010). The stimulus labels were shuffled 200 times, the whole pipeline was refitted and cross-validated each time, and the p-value was computed as:
 
 $$
-p = \frac{C + 1}{N_{\text{perm}} + 1},
-\tag{4}
+p = \frac{C+1}{N_{\mathrm{perm}}+1},
 $$
 
-where $C$ is the number of permutations whose accuracy matched or exceeded the real one. With 200 permutations the smallest attainable value is 1/201 ≈ 0.005. Errors were summarised by a confusion matrix built from cross-validated predictions and by the distance between the decoded and the true direction, wrapped onto the circle.
+where $C$ is the number of permutations whose accuracy matched or exceeded the real one. With 200 permutations, the smallest attainable value is $1/201 \approx 0.005$. Errors were summarised by a confusion matrix built from cross-validated predictions and by the distance between the decoded and the true direction, wrapped onto the circle.
 
 ### 2.4 Single neurons versus the population
 
-The same decoder and cross-validation splits were applied to (i) each neuron alone and (ii) random subsets of n = 1, 2, 4, 8, 16, 32 and 50 neurons, with 20 subsets drawn without replacement for each size (a neuron-dropping curve).
+The same decoder and cross-validation splits were applied to:
+
+1. each neuron alone; and
+2. random subsets of $n = 1, 2, 4, 8, 16, 32,$ and $50$ neurons.
+
+Twenty subsets were drawn without replacement for each population size, producing a neuron-dropping curve.
 
 ### 2.5 Software
 
-All analyses were run in Python 3.11 with NumPy, SciPy, scikit-learn (Pedregosa et al., 2011) and Matplotlib, using the versions pinned in `requirements.txt`. Every random number derives from a single seed. Instructions to reproduce every number and figure are given in [Appendix A](#appendix-a-reproducing-the-results).
+All analyses were run in Python 3.11 with NumPy, SciPy, scikit-learn and Matplotlib, using the versions pinned in `requirements.txt`. Every random number derives from a single seed. Instructions to reproduce every number and figure are given in [Appendix A](#appendix-a-reproducing-the-results).
 
 ## 3. Results
 
@@ -108,7 +125,7 @@ Expected counts ranged from 0.51 to 7.70 spikes per trial. The mean absolute dif
 
 ![Figure 1](figures/fig01_tuning_curves.png)
 
-**Figure 1. Cosine tuning and Poisson variability.** **(A)** Tuning curves of four example neurons with preferred directions near 0°, 90°, 180° and 270°. Lines show the expected count $f_i(\theta)\,T$; dots show the mean ± SEM over 60 trials. **(B)** Single-trial counts of one neuron (preferred direction 102°). Horizontal bars mark the mean for each stimulus; open circles mark two directions, 70° on either side of the preferred direction, that evoke the same expected count.
+**Figure 1. Cosine tuning and Poisson variability.** **(A)** Tuning curves of four example neurons with preferred directions near 0°, 90°, 180° and 270°. Lines show the expected count $f_i(\theta)T$; dots show the mean ± SEM over 60 trials. **(B)** Single-trial counts of one neuron (preferred direction 102°). Horizontal bars mark the mean for each stimulus; open circles mark two directions, 70° on either side of the preferred direction, that evoke the same expected count.
 
 ### 3.2 The population response forms a ring
 
@@ -118,7 +135,7 @@ With neurons sorted by preferred direction, the trial-averaged response showed a
 
 **Figure 2. Population response.** **(A)** Trial-averaged counts, normalised to each neuron's maximum, with neurons sorted by preferred direction. **(B)** Single trials, z-scored per neuron, grouped by stimulus (60 trials per block).
 
-As predicted by Eq. 3, the first two principal components captured 100% of the variance of the noise-free responses (Fig. 3A). In single trials, PC1 and PC2 together explained 39.6% of the variance, and every later component explained about 2% (PC3: 2.3%), a flat noise floor produced by independent Poisson noise. In the PC1–PC2 plane the stimulus means lay on a ring in the order of the directions, with 315° next to 0° (Fig. 3B). Single-trial clouds overlapped mostly with their neighbours on the ring.
+As predicted by the expanded tuning equation, the first two principal components captured 100% of the variance of the noise-free responses (Fig. 3A). In single trials, PC1 and PC2 together explained 39.6% of the variance, and every later component explained about 2% (PC3: 2.3%), a flat noise floor produced by independent Poisson noise. In the PC1–PC2 plane the stimulus means lay on a ring in the order of the directions, with 315° next to 0°. Single-trial clouds overlapped mostly with their neighbours on the ring.
 
 ![Figure 3](figures/fig03_pca.png)
 
@@ -126,7 +143,7 @@ As predicted by Eq. 3, the first two principal components captured 100% of the v
 
 ### 3.3 The population decodes direction far above chance, and its errors are local
 
-The full population decoded the stimulus on 88.3% ± 3.6% of held-out trials (mean ± SD over 5 folds), against a chance level of 12.5%. Decoders trained on shuffled labels scored 12.4% ± 1.9%. No permutation reached the real accuracy, giving p = 0.005, the smallest value attainable with 200 permutations. Per-stimulus accuracy ranged from 0.80 (0°) to 0.93 (270°) (Fig. 4A). Every error assigned a trial to a neighbouring direction, ±45° away (Fig. 4B), matching the neighbour overlap seen in Fig. 3B.
+The full population decoded the stimulus on 88.3% ± 3.6% of held-out trials (mean ± SD over 5 folds), against a chance level of 12.5%. Decoders trained on shuffled labels scored 12.4% ± 1.9%. No permutation reached the real accuracy, giving $p = 0.005$, the smallest value attainable with 200 permutations. Per-stimulus accuracy ranged from 0.80 (0°) to 0.93 (270°) (Fig. 4A). Every error assigned a trial to a neighbouring direction, ±45° away (Fig. 4B), matching the neighbour overlap seen in Fig. 3B.
 
 ![Figure 4](figures/fig04_decoder.png)
 
@@ -134,7 +151,7 @@ The full population decoded the stimulus on 88.3% ± 3.6% of held-out trials (me
 
 ### 3.4 A population outperforms its best member
 
-Decoded alone, single neurons reached a mean accuracy of 23.1%, ranging from 16.9% to 32.3% (Fig. 5A). The best one is the neuron shown in Fig. 1B. The population of 50 was 3.8 times more accurate than the average neuron and far above the best. Accuracy rose monotonically with the number of neurons and was still rising at n = 50 (Fig. 5B; Table 2).
+Decoded alone, single neurons reached a mean accuracy of 23.1%, ranging from 16.9% to 32.3% (Fig. 5A). The best one is the neuron shown in Fig. 1B. The population of 50 was 3.8 times more accurate than the average neuron and far above the best. Accuracy rose monotonically with the number of neurons and was still rising at $n = 50$ (Fig. 5B; Table 2).
 
 ![Figure 5](figures/fig05_single_vs_population.png)
 
@@ -146,17 +163,17 @@ Decoded alone, single neurons reached a mean accuracy of 23.1%, ranging from 16.
 |---|---|---|---|---|---|---|---|
 | Accuracy | 0.22 ± 0.03 | 0.31 ± 0.06 | 0.43 ± 0.07 | 0.59 ± 0.04 | 0.72 ± 0.03 | 0.84 ± 0.02 | 0.88 |
 
-At n = 50 every subset is the full population, so there is no spread.
+At $n = 50$ every subset is the full population, so there is no spread.
 
 ## 4. Discussion
 
 A population of broadly tuned, noisy neurons identified stimulus direction on almost nine of ten single trials, whereas its individual members barely exceeded chance. The simulation isolates two mechanisms behind this gain.
 
-**Symmetry breaking.** A cosine tuning curve cannot tell $\varphi_i - \delta$ from $\varphi_i + \delta$ (Fig. 1B). Neurons with other preferred directions are confused by other pairs of stimuli, so an ambiguity in one neuron is resolved by another whose preference lies on one side of it. This requires heterogeneous preferred directions; a population of identically tuned neurons would inherit the ambiguity of its members.
+**Symmetry breaking.** A cosine tuning curve cannot tell $\varphi_i-\delta$ from $\varphi_i+\delta$ (Fig. 1B). Neurons with other preferred directions are confused by other pairs of stimuli, so an ambiguity in one neuron is resolved by another whose preference lies on one side of it. This requires heterogeneous preferred directions; a population of identically tuned neurons would inherit the ambiguity of its members.
 
-**Noise averaging.** Because the Poisson noise is independent across neurons, evidence about the stimulus accumulates as neurons are added while noise partially cancels. With independent noise, the information carried by the population grows with its size (Averbeck et al., 2006), which is consistent with the curve in Fig. 5B still rising at n = 50.
+**Noise averaging.** Because the Poisson noise is independent across neurons, evidence about the stimulus accumulates as neurons are added while noise partially cancels. With independent noise, the information carried by the population grows with its size (Averbeck et al., 2006), which is consistent with the curve in Fig. 5B still rising at $n = 50$.
 
-**Geometry explains the errors.** Cosine tuning confines the noise-free response to a plane, where directions form a ring (Eq. 3; Fig. 3). Neighbouring directions are therefore neighbours in neural space, and single-trial noise blurs them into each other first. This explains why every decoding error fell on an adjacent direction (Fig. 4B).
+**Geometry explains the errors.** Cosine tuning confines the noise-free response to a plane, where directions form a ring. Neighbouring directions are therefore neighbours in neural space, and single-trial noise blurs them into each other first. This explains why every decoding error fell on an adjacent direction (Fig. 4B).
 
 **Limitations.** The model is deliberately minimal. First, noise was independent, whereas cortical noise correlations tend to be positive and larger for neurons with similar tuning (Averbeck et al., 2006; Moreno-Bote et al., 2014). Some correlations, namely those aligned with the signal (differential correlations), limit the information a population can carry no matter how many neurons are added (Moreno-Bote et al., 2014), so the steady gain seen here need not continue in vivo. Second, accuracy treats a 45° error and a 180° error alike; a circular error measure would describe a direction code better. Third, we used a single linear decoder, fixed counting window, random uniform preferred directions and one simulated dataset, so the specific numbers depend on these choices. Adding correlated noise is the natural next step.
 
@@ -197,8 +214,8 @@ The notebook `population_coding_cosine_tuning.ipynb` contains the full simulatio
 ### A.2 Get the code
 
 ```bash
-git clone https://github.com/<your-username>/<repo-name>.git
-cd <repo-name>
+git clone https://github.com/tiagosoutorocha-neuro/population-coding.git
+cd population-coding
 ```
 
 ### A.3 Create the environment
@@ -212,7 +229,13 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt jupyter
 ```
 
-If PowerShell blocks the activation script, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once and activate again.
+If PowerShell blocks the activation script, run:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
+once, then activate the environment again.
 
 **macOS / Linux**
 
@@ -227,7 +250,7 @@ python -m pip install -r requirements.txt jupyter
 
 ### A.4 Run the notebook
 
-**Interactively:** open `population_coding_cosine_tuning.ipynb`, select the `.venv` kernel, then restart the kernel and run all cells (VS Code: *Restart*, then *Run All*; JupyterLab: *Kernel → Restart Kernel and Run All Cells*).
+**Interactively:** open `population_coding_cosine_tuning.ipynb`, select the `.venv` kernel, then restart the kernel and run all cells.
 
 **From the terminal:** this runs every cell in order and saves the outputs into the notebook.
 
@@ -254,21 +277,21 @@ Single trials:     PC1 + PC2       : 39.6% of variance
 
 - All randomness comes from `SEED = 2026`. It is split with `np.random.SeedSequence(SEED).spawn(...)` into independent streams for the population parameters, the spike counts and the neuron subsets. The cross-validation splits and the permutation test use the same seed.
 - Run the notebook top to bottom from a fresh kernel. Re-running a single cell advances its random stream and changes the numbers that follow.
-- With the same operating system and package versions, the outputs are identical from run to run. Across operating systems, decoders fitted on a single neuron can differ very slightly because of floating-point differences. Between Windows and Linux this changed one printed value in the last digit, the SD of the one-neuron subset accuracy in notebook Section 5 (0.033 on Windows, 0.032 on Linux), and moved one neuron to an adjacent bin of the histogram in Fig. 5A. Every other printed number matches.
-- Changing any value in `P` gives a different, equally reproducible, result.
+- With the same operating system and package versions, the outputs are identical from run to run. Across operating systems, decoders fitted on a single neuron can differ very slightly because of floating-point differences.
+- Changing any value in `P` gives a different, equally reproducible result.
 
 ### A.7 Repository structure
 
 ```text
 .
-├── population_coding_cosine_tuning.ipynb   # simulation, analyses and figures (saved with outputs)
-├── requirements.txt                        # pinned package versions
-├── figures/                                # written by the notebook
+├── population_coding_cosine_tuning.ipynb   # simulation, analyses and figures
+├── requirements.txt                         # pinned package versions
+├── figures/                                 # written by the notebook
 │   ├── fig01_tuning_curves.png
 │   ├── fig02_heatmap.png
 │   ├── fig03_pca.png
 │   ├── fig04_decoder.png
 │   └── fig05_single_vs_population.png
-├── .gitignore                              # excludes .venv/
+├── .gitignore                               # excludes .venv/
 └── README.md
 ```
