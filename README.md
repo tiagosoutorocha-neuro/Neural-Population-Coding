@@ -2,7 +2,7 @@
 
 # One neuron versus a population: decoding stimulus direction from simulated cosine-tuned neurons with Poisson noise
 
-**Tiago [surname]**
+**Tiago Souto Rocha**
 
 NUTES and NeuroComp research group, Universidade Estadual da Paraíba (UEPB), Campina Grande, Brazil
 
@@ -14,7 +14,7 @@ October 2026
 
 ## Abstract
 
-Neurons in sensory and motor cortex are broadly tuned and noisy, so the response of any single cell is an unreliable report of the stimulus. We asked how much a population gains over its individual members, using a minimal simulation of 50 neurons with cosine tuning to stimulus direction and independent Poisson spike counts, presented with 8 directions (60 trials each, 0.2 s counting window). The trial-averaged population response formed a ring ordered by direction; principal component analysis (PCA) showed that the noise-free responses lie exactly in a two-dimensional plane, while Poisson noise spread single-trial variance across all dimensions. A cross-validated linear decoder recovered the stimulus on 88.3% of single trials (chance 12.5%; permutation p = 0.005), and every error fell on a neighbouring direction. Neurons decoded alone reached 23.1% on average (best 32.3%), and accuracy rose steadily as neurons were added. Two mechanisms account for the gain: heterogeneous preferred directions break the symmetry that makes each cosine tuning curve ambiguous, and independent noise averages out across neurons.
+Neurons in sensory and motor cortex are broadly tuned and noisy, so the response of any single cell is an unreliable report of the stimulus. We asked how much a population gains over its individual members, using a minimal simulation of 50 neurons with cosine tuning to stimulus direction and independent Poisson spike counts, presented with 8 directions (60 trials each, 0.2 s counting window). The trial-averaged population response formed a ring ordered by direction, principal component analysis (PCA) showed that the noise-free responses lie exactly in a two-dimensional plane, while Poisson noise spread single-trial variance across all dimensions. A cross-validated linear decoder recovered the stimulus on 88.3% of single trials (chance 12.5%; permutation p = 0.005), and every error fell on a neighbouring direction. Neurons decoded alone reached 23.1% on average (best 32.3%), and accuracy rose steadily as neurons were added. Two mechanisms account for the gain: heterogeneous preferred directions break the symmetry that makes each cosine tuning curve ambiguous, and independent noise averages out across neurons.
 
 **Keywords:** population coding · cosine tuning · Poisson variability · neural decoding · principal component analysis · cross-validation
 
