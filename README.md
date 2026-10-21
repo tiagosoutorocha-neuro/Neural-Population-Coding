@@ -38,25 +38,31 @@ We describe the population response with heatmaps and PCA, then decode the stimu
 
 Each neuron $i$ ($i = 1,\ldots,50$) has a preferred direction $\varphi_i$, a baseline rate $b_i$ and a gain $g_i$. Its mean firing rate for a stimulus moving in direction $\theta$ is:
 
-$$
+
+```math
 f_i(\theta)
 =
 b_i
 +
 g_i\frac{1+\cos(\theta-\varphi_i)}{2}.
-$$
+```
+
 
 Therefore,
 
-$$
+
+```math
 b_i \leq f_i(\theta) \leq b_i+g_i.
-$$
+```
+
 
 On each trial, the spike count of every neuron in a window of $T$ seconds is drawn independently:
 
-$$
-n_i \sim \operatorname{Poisson}\!\left(f_i(\theta)\,T\right).
-$$
+
+```math
+n_i \sim \mathrm{Poisson}\!\left(f_i(\theta)\,T\right).
+```
+
 
 Noise is therefore private to each neuron (no noise correlations), and the variance of each count equals its mean (Fano factor 1). Parameters are listed in Table 1. As a sanity check, the empirical means were compared with $f_i(\theta)T$ and the Fano factor was computed for every neuron and stimulus.
 
@@ -80,7 +86,8 @@ Trial-averaged responses were normalised to each neuron's maximum mean count and
 
 Expanding the tuning equation above gives:
 
-$$
+
+```math
 f_i(\theta)
 =
 \left(b_i+\frac{g_i}{2}\right)
@@ -88,7 +95,8 @@ f_i(\theta)
 \frac{g_i}{2}\cos\varphi_i\,\cos\theta
 +
 \frac{g_i}{2}\sin\varphi_i\,\sin\theta.
-$$
+```
+
 
 After the mean is removed, the noise-free population response therefore lies in a two-dimensional plane and traces a closed curve (a ring) as $\theta$ goes around the circle. We tested this prediction with PCA on the noise-free responses at 360 directions, and compared it with PCA on the z-scored single trials. PCA was used for visualisation only and played no part in decoding (Cunningham & Yu, 2014).
 
@@ -98,9 +106,11 @@ The stimulus was decoded from the vector of single-trial spike counts with L2-re
 
 Significance was assessed with a label-permutation test (Ojala & Garriga, 2010). The stimulus labels were shuffled 200 times, the whole pipeline was refitted and cross-validated each time, and the p-value was computed as:
 
-$$
+
+```math
 p = \frac{C+1}{N_{\mathrm{perm}}+1},
-$$
+```
+
 
 where $C$ is the number of permutations whose accuracy matched or exceeded the real one. With 200 permutations, the smallest attainable value is $1/201 \approx 0.005$. Errors were summarised by a confusion matrix built from cross-validated predictions and by the distance between the decoded and the true direction, wrapped onto the circle.
 
